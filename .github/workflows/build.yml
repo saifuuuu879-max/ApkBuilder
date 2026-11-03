@@ -1,35 +1,31 @@
 name: Build APK
-
-on:
-workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
-build:
-runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-  - name: Setup Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
+      - name: Extract project
+        run: unzip -q ApkBuilder.zip -d .
 
-  - name: Extract project
-    run: unzip -q ApkBuilder.zip -d .
+      - name: Build APK
+        run: |
+          cd ApkBuilder
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-  - name: Build APK
-    run: |
-      cd ApkBuilder
-      chmod +x gradlew
-      ./gradlew assembleDebug
-
-  - name: Upload APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: ApkBuilder-debug-apk
-      path: ApkBuilder/app/build/outputs/apk/debug/*.apk
-      if-no-files-found: error
-      retention-days: 7
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ApkBuilder-debug-apk
+          path: ApkBuilder/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
