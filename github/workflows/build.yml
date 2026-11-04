@@ -8,28 +8,22 @@ build:
 runs-on: ubuntu-latest
 
 steps:
-  - name: Checkout repository
+  - name: Checkout
     uses: actions/checkout@v4
 
-  - name: Setup Java
+  - name: Set up JDK
     uses: actions/setup-java@v4
     with:
       distribution: temurin
       java-version: '17'
 
-  - name: Extract project
-    run: unzip -q ApkBuilder.zip -d .
-
   - name: Build APK
     run: |
-      cd ApkBuilder
       chmod +x gradlew
       ./gradlew assembleDebug
 
   - name: Upload APK
     uses: actions/upload-artifact@v4
     with:
-      name: ApkBuilder-debug-apk
-      path: ApkBuilder/app/build/outputs/apk/debug/*.apk
-      if-no-files-found: error
-      retention-days: 7
+      name: ApkBuilder
+      path: app/build/outputs/apk/debug/*.apk
